@@ -6,6 +6,7 @@ from .views import (
     upload_dataset,
     report_api,
     profile_api,
+    cleaning_api,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path("datasets/upload/", upload_dataset),
     path("report/<int:dataset_id>/", report_api),
     path("profile/<int:dataset_id>/", profile_api),
+    path("clean/<int:dataset_id>/",cleaning_api),
 ]

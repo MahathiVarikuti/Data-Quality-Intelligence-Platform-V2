@@ -33,3 +33,16 @@ export async function getProfile(id) {
     const { data } = await api.get(`profile/${id}/`);
     return data;
 }
+
+
+export async function cleanDataset(id, action, columns = []) {
+    const { data } = await api.post(
+        `clean/${id}/`,
+        {
+            action,
+            columns,
+        }
+    );
+
+    return data;
+}

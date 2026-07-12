@@ -12,6 +12,7 @@ import Tabs from "../components/ui/Tabs";
 import ProfileSummary from "../components/profile/ProfileSummary";
 import ColumnProfileTable from "../components/profile/ColumnProfileTable";
 import PreviewTable from "../components/profile/PreviewTable";
+import CleaningPanel from "../components/cleaning/CleaningPanel";
 
 import {
   Database,
@@ -227,11 +228,7 @@ export default function DatasetDetails() {
           {
             label: "Cleaning",
             content: (
-              <div className="rounded-2xl border bg-white p-10 shadow-sm">
-                <h2 className="text-2xl font-bold">
-                  Data Cleaning
-                </h2>
-              </div>
+              <CleaningPanel datasetId={dataset.id} />
             ),
           },
 

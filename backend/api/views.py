@@ -9,6 +9,7 @@ from datasets.models import Dataset, ValidationReport
 from datasets.services.dataset_service import DatasetService
 from datasets.services.quality_service import QualityService
 from datasets.services.profile_service import ProfileService
+from datasets.services.cleaning_service import CleaningService
 
 
 from .serializers import DatasetSerializer
@@ -124,3 +125,45 @@ def profile_api(request, dataset_id):
     profile = ProfileService.generate_profile(df)
 
     return Response(profile)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def cleaning_api(request, dataset_id):
+
+    dataset = get_object_or_404(Dataset, id=dataset_id)
+
+    action = request.data.get("action")
+
+    df = DatasetService.load(dataset)
+
+    if action == "duplicates":
+        cleaned = CleaningService.remove_duplicates(df)
+
+    elif action == "missing":
+        cleaned = CleaningService.fill_missing(df)
+
+    elif action == "normalize":
+        cleaned = CleaningService.normalize_text(df)
+
+    elif action == "outliers":
+        cleaned = CleaningService.remove_outliers(df)
+
+    elif action == "columns":
+        columns = request.data.get("columns", [])
+        cleaned = CleaningService.remove_columns(df, columns)
+
+    else:
+        return Response(
+            {"error": "Invalid action"},
+            status=400,
+        )
+
+    DatasetService.save(dataset, cleaned)
+    DatasetService.update_metadata(dataset, cleaned)
+
+    return Response({
+        "success": True,
+        "rows": len(cleaned),
+        "columns": len(cleaned.columns),
+    })
