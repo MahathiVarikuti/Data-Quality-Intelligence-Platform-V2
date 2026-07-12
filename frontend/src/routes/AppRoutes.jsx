@@ -8,6 +8,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
 
+
 export default function AppRoutes() {
   return (
     <BrowserRouter>

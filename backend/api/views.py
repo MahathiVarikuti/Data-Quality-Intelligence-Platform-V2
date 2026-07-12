@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from datasets.models import Dataset, ValidationReport
 from datasets.services.dataset_service import DatasetService
 from datasets.services.quality_service import QualityService
+from datasets.services.profile_service import ProfileService
+
 
 from .serializers import DatasetSerializer
 
@@ -109,3 +111,16 @@ def report_api(request, dataset_id):
             "recommendations": report.recommendations,
         }
     )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def profile_api(request, dataset_id):
+
+    dataset = get_object_or_404(Dataset, id=dataset_id)
+
+    df = DatasetService.load(dataset)
+
+    profile = ProfileService.generate_profile(df)
+
+    return Response(profile)
