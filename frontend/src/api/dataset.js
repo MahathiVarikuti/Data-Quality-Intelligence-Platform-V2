@@ -27,3 +27,9 @@ export async function uploadDataset(file) {
 
     return data;
 }
+
+
+export async function getProfile(id) {
+    const { data } = await api.get(`profile/${id}/`);
+    return data;
+}

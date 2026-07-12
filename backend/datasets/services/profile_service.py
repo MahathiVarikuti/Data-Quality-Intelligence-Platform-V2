@@ -12,12 +12,48 @@ class ProfileService:
 
             series = df[column]
 
-            column_profile.append({
+            info = {
                 "name": column,
                 "type": str(series.dtype),
                 "missing": int(series.isna().sum()),
                 "unique": int(series.nunique()),
-            })
+            }
+
+            if pd.api.types.is_numeric_dtype(series):
+
+                info["mean"] = (
+                    round(float(series.mean()), 2)
+                    if not series.dropna().empty
+                    else None
+                )
+
+                info["median"] = (
+                    round(float(series.median()), 2)
+                    if not series.dropna().empty
+                    else None
+                )
+
+                info["min"] = (
+                    float(series.min())
+                    if not series.dropna().empty
+                    else None
+                )
+
+                info["max"] = (
+                    float(series.max())
+                    if not series.dropna().empty
+                    else None
+                )
+
+            else:
+
+                info["top_values"] = (
+                    series.value_counts()
+                    .head(3)
+                    .index.tolist()
+                )
+
+            column_profile.append(info)
 
         return {
             "rows": len(df),
