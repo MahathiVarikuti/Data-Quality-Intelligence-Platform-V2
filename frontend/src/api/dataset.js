@@ -5,6 +5,11 @@ export async function getDatasets() {
     return data;
 }
 
+export async function getDataset(id) {
+    const { data } = await api.get(`datasets/${id}/`);
+    return data;
+}
+
 export async function uploadDataset(file) {
     const formData = new FormData();
 

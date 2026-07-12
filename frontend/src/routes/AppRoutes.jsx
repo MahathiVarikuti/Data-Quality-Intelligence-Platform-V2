@@ -14,8 +14,8 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/upload" element={<Upload />} />
-        <Route path="/datasets" element={<DatasetDetails />} />
-        <Route path="/reports" element={<Reports />} />
+        <Route path="/datasets/:id" element={<DatasetDetails />} />
+        <Route path="/reports/:id" element={<Reports />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />

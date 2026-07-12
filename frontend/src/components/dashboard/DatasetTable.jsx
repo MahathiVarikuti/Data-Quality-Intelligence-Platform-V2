@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FileSpreadsheet } from "lucide-react";
 
 import { getDatasets } from "../../api/dataset";
-
+import { Link } from "react-router-dom";
 
 export default function DatasetTable() {
     const [datasets, setDatasets] = useState([]);
@@ -82,7 +82,12 @@ export default function DatasetTable() {
                         className="border-b hover:bg-slate-50"
                     >
                         <td className="p-4 font-medium">
-                        {dataset.name}
+                            <Link
+                                to={`/datasets/${dataset.id}`}
+                                className="text-indigo-600 hover:underline"
+                            >
+                                {dataset.name}
+                            </Link>
                         </td>
 
                         <td>
