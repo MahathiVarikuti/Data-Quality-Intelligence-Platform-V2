@@ -233,11 +233,11 @@ export default function DatasetDetails() {
           },
 
           {
-            label: "Report",
+            label: "Export",
             content: (
               <div className="rounded-2xl border bg-white p-10 shadow-sm">
                 <h2 className="text-2xl font-bold">
-                  Executive Report
+                  Export the CSV
                 </h2>
               </div>
             ),

@@ -13,6 +13,9 @@ from datasets.services.cleaning_service import CleaningService
 
 
 from .serializers import DatasetSerializer
+from rest_framework import status
+from datasets.services.dataset_service import DatasetService
+
 
 
 @api_view(["GET"])
@@ -197,3 +200,24 @@ def cleaning_api(request, dataset_id):
         "columns": len(cleaned.columns),
         "report": report,
     })
+
+
+
+
+@api_view(["DELETE"])
+@permission_classes([AllowAny])
+def delete_dataset(request, dataset_id):
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+    )
+
+    DatasetService.delete_file(dataset)
+
+    dataset.delete()
+
+    return Response(
+        {"success": True},
+        status=status.HTTP_204_NO_CONTENT,
+    )

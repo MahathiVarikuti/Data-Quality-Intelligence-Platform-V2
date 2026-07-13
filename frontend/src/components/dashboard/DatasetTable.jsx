@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { FileSpreadsheet, Search, Trash2, ExternalLink } from "lucide-react";
 
-import { getDatasets } from "../../api/dataset";
-
+import {
+    getDatasets,
+    deleteDataset,
+} from "../../api/dataset";
 export default function DatasetTable() {
   const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,6 +56,31 @@ export default function DatasetTable() {
 
       default:
         return "bg-slate-100 text-slate-700";
+    }
+  }
+
+  async function handleDelete(id) {
+
+    const ok = window.confirm(
+      "Delete this dataset?"
+    );
+
+    if (!ok) return;
+
+    try {
+
+      await deleteDataset(id);
+
+      setDatasets((prev) =>
+        prev.filter((d) => d.id !== id)
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Delete failed.");
+
     }
   }
 
@@ -210,6 +237,7 @@ export default function DatasetTable() {
                   <td>
 
                     <button
+                      onClick={() => handleDelete(dataset.id)}
                       className="rounded-lg border border-red-200 p-2 text-red-600 hover:bg-red-50"
                     >
                       <Trash2 size={16} />

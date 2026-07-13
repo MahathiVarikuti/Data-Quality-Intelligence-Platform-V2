@@ -53,3 +53,15 @@ export async function getDashboard() {
     const { data } = await api.get("dashboard/");
     return data;
 }
+
+export async function getReport(id) {
+    const { data } = await api.get(`report/${id}/`);
+    return data;
+}
+
+
+export async function deleteDataset(id) {
+    await api.delete(
+        `datasets/${id}/delete/`
+    );
+}

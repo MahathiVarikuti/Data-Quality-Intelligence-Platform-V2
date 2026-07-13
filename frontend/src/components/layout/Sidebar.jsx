@@ -24,11 +24,7 @@ const links = [
     label: "Datasets",
     icon: FileText,
   },
-  {
-    to: "/reports",
-    label: "Reports",
-    icon: BarChart3,
-  },
+  
 ];
 
 export default function Sidebar() {
