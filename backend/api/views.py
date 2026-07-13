@@ -160,10 +160,40 @@ def cleaning_api(request, dataset_id):
         )
 
     DatasetService.save(dataset, cleaned)
-    DatasetService.update_metadata(dataset, cleaned)
+
+    DatasetService.update_metadata(
+        dataset,
+        cleaned,
+        status="cleaned",
+    )
+
+    report = QualityService.compute_report(cleaned)
+
+    ValidationReport.objects.update_or_create(
+        dataset=dataset,
+        defaults={
+            "completeness_score": report["completeness_score"],
+            "uniqueness_score": report["uniqueness_score"],
+            "validity_score": report["validity_score"],
+            "consistency_score": report["consistency_score"],
+            "overall_score": report["overall_score"],
+            "total_missing": report["total_missing"],
+            "duplicate_count": report["duplicate_count"],
+            "invalid_email_count": report["invalid_email_count"],
+            "invalid_type_count": report["invalid_type_count"],
+            "issue_summary": report["issue_summary"],
+            "recommendations": report["recommendations"],
+        },
+    )
+
+    dataset.initial_missing_count = report["total_missing"]
+    dataset.initial_duplicate_count = report["duplicate_count"]
+    dataset.initial_overall_score = report["overall_score"]
+    dataset.save()
 
     return Response({
         "success": True,
         "rows": len(cleaned),
         "columns": len(cleaned.columns),
+        "report": report,
     })

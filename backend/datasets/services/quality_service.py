@@ -62,7 +62,7 @@ class QualityService:
             'validity_score': validity_score, 'consistency_score': consistency_score,
             'overall_score': overall_score, 'total_missing': total_missing,
             'duplicate_count': duplicate_count, 'invalid_email_count': invalid_email_count,
-            'invalid_email_samples': invalid_email_samples,
+            'invalid_type_count': 0,'invalid_email_samples': invalid_email_samples,
             'issue_summary': issue_summary, 'recommendations': recommendations,
         }
 

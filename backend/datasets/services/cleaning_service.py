@@ -1,5 +1,5 @@
 import pandas as pd
-
+from pandas.api.types import is_numeric_dtype
 
 class CleaningService:
 
@@ -14,18 +14,18 @@ class CleaningService:
 
         for column in cleaned.columns:
 
-            if cleaned[column].dtype == "object":
-
-                mode = cleaned[column].mode()
-
-                if not mode.empty:
-                    cleaned[column] = cleaned[column].fillna(mode[0])
-
-            else:
+            if is_numeric_dtype(cleaned[column]):
 
                 cleaned[column] = cleaned[column].fillna(
                     cleaned[column].mean()
                 )
+
+            else:
+
+                mode = cleaned[column].mode()
+
+                if not mode.empty:
+                    cleaned[column] = cleaned[column].fillna(mode.iloc[0])
 
         return cleaned
 
