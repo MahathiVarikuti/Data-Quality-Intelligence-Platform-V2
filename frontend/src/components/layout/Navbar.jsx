@@ -1,6 +1,4 @@
 import {
-  Bell,
-  Search,
   UserCircle,
 } from "lucide-react";
 
@@ -13,11 +11,11 @@ export default function Navbar() {
       <div>
 
         <h1 className="text-2xl font-bold text-slate-900">
-          Dashboard
+          Data Quality Intelligence Platform
         </h1>
 
         <p className="mt-1 text-sm text-slate-500">
-          Monitor your datasets and quality reports
+          Spend less time fixing data and more time discovering insights
         </p>
 
       </div>
@@ -28,28 +26,11 @@ export default function Navbar() {
 
         {/* Search */}
 
-        <div className="relative hidden lg:block">
-
-          <Search
-            size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-
-          <input
-            type="text"
-            placeholder="Search datasets..."
-            className="w-72 rounded-xl border border-slate-200 bg-slate-50 py-2 pl-10 pr-4 text-sm outline-none transition focus:border-indigo-500 focus:bg-white"
-          />
-
-        </div>
+        
 
         {/* Notification */}
 
-        <button className="rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-
-          <Bell size={20} />
-
-        </button>
+        
 
         {/* Profile */}
 
@@ -67,7 +48,7 @@ export default function Navbar() {
             </p>
 
             <p className="text-xs text-slate-500">
-              Data Analyst
+              User
             </p>
 
           </div>

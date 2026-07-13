@@ -47,7 +47,7 @@ export default function Sidebar() {
           </h1>
 
           <p className="text-xs text-slate-500">
-            Data Intelligence
+            Data Quality Intelligence
           </p>
         </div>
 

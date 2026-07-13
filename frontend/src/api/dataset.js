@@ -46,3 +46,10 @@ export async function cleanDataset(id, action, columns = []) {
 
     return data;
 }
+
+
+
+export async function getDashboard() {
+    const { data } = await api.get("dashboard/");
+    return data;
+}

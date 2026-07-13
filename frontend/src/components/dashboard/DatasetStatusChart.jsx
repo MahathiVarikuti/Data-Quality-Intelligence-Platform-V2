@@ -2,58 +2,77 @@ import {
   PieChart,
   Pie,
   Cell,
-  Tooltip,
   ResponsiveContainer,
+  Legend,
+  Label,
 } from "recharts";
 
-const data = [
-  { name: "Validated", value: 5 },
-  { name: "Uploaded", value: 2 },
-  { name: "Cleaned", value: 3 },
-];
+const COLORS = {
+  uploaded: "#94a3b8",
+  profiled: "#3b82f6",
+  validated: "#22c55e",
+  cleaned: "#8b5cf6",
+};
 
-const COLORS = [
-  "#4f46e5",
-  "#38bdf8",
-  "#10b981",
-];
-
-export default function DatasetStatusChart() {
+export default function DatasetStatusChart({ data = [] }) {
+  const chartData = data.map((item) => ({
+    name:
+      item.status.charAt(0).toUpperCase() +
+      item.status.slice(1),
+    value: item.count,
+    color: COLORS[item.status] || "#64748b",
+  }));
+  const total = chartData.reduce(
+    (sum, item) => sum + item.value,
+    0
+  );
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="h-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
 
-      <h2 className="mb-6 text-xl font-semibold">
-        Dataset Status
+      <h2 className="mb-6 text-lg font-semibold">
+        Dataset Status Overview
       </h2>
 
       <ResponsiveContainer
         width="100%"
-        height={300}
+        height={340}
       >
-
         <PieChart>
 
           <Pie
-            data={data}
-            dataKey="value"
-            outerRadius={90}
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={75}
+              outerRadius={115}
+              paddingAngle={2}
+              stroke="none"
           >
-
-            {data.map((entry, index) => (
-              <Cell
-                key={index}
-                fill={COLORS[index]}
+              {chartData.map((entry, index) => (
+                  <Cell
+                      key={index}
+                      fill={entry.color}
+                  />
+              ))}
+              <Label
+                value={total}
+                position="center"
+                className="fill-slate-900 text-3xl font-bold"
               />
-            ))}
-
           </Pie>
 
-          <Tooltip />
+          <Legend
+              verticalAlign="bottom"
+              align="center"
+              iconType="rect"
+              wrapperStyle={{
+                  paddingTop: 20,
+                  fontSize: 14,
+              }}
+          />
 
         </PieChart>
-
       </ResponsiveContainer>
-
     </div>
   );
 }
