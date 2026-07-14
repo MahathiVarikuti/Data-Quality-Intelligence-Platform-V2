@@ -14,8 +14,8 @@ from datasets.services.cleaning_service import CleaningService
 
 from .serializers import DatasetSerializer
 from rest_framework import status
-from datasets.services.dataset_service import DatasetService
 
+from django.http import FileResponse
 
 
 @api_view(["GET"])
@@ -221,3 +221,27 @@ def delete_dataset(request, dataset_id):
         {"success": True},
         status=status.HTTP_204_NO_CONTENT,
     )
+
+
+
+from django.http import FileResponse
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def export_dataset(request, dataset_id):
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+    )
+
+    response = FileResponse(
+        open(dataset.file.path, "rb"),
+        content_type="text/csv",
+    )
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="{dataset.name}.csv"'
+    )
+
+    return response
