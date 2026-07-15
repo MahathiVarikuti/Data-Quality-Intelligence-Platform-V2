@@ -69,7 +69,7 @@ export default function DatasetDetails() {
 
   const overviewContent = (
     <>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetadataCard
           icon={<Database size={22} />}
           title="Rows"
@@ -187,16 +187,16 @@ export default function DatasetDetails() {
 
   return (
     <DashboardLayout>
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold">
+      <div className="mb-2">
+        <h1 className="text-2xl font-bold">
           {dataset.name}
         </h1>
 
-        <p className="mt-2 text-slate-500">
+        <p className="mt-0.5 text-slate-500">
           Dataset overview and quality report
         </p>
       </div>
-
+      <div className="min-w-0 overflow-hidden">
       <Tabs
         tabs={[
           {
@@ -236,14 +236,144 @@ export default function DatasetDetails() {
             label: "Export",
             content: (
               <div className="rounded-2xl border bg-white p-10 shadow-sm">
-                <h2 className="text-2xl font-bold">
-                  Export the CSV
-                </h2>
+
+                <div className="space-y-6">
+
+                  <div className="rounded-xl border bg-white p-6">
+
+                    <h2 className="text-2xl font-bold">
+                      Export Dataset
+                    </h2>
+
+                    <p className="mt-2 text-slate-500">
+                      Download the cleaned dataset together with profiling metadata and quality reports.
+                    </p>
+
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+
+                    {/* CSV */}
+
+                    <a
+                      href={`http://127.0.0.1:8000/api/datasets/${dataset.id}/export/`}
+                      className="cursor-pointer rounded-xl border border-indigo-100 bg-indigo-50 p-5 text-center transition-all duration-200 hover:border-indigo-600 hover:bg-indigo-600 hover:text-white hover:shadow-lg"
+                    >
+
+                      <div className="font-semibold">
+                        Download CSV
+                      </div>
+
+                      <div className="mt-2 text-xs opacity-70">
+                        Latest cleaned dataset (.csv)
+                      </div>
+
+                    </a>
+
+                    {/* Profile */}
+
+                    <button
+                      onClick={() => {
+
+                        const blob = new Blob(
+                          [
+                            JSON.stringify(
+                              profile,
+                              null,
+                              2
+                            ),
+                          ],
+                          {
+                            type: "application/json",
+                          }
+                        );
+
+                        const url =
+                          URL.createObjectURL(blob);
+
+                        const a =
+                          document.createElement("a");
+
+                        a.href = url;
+
+                        a.download =
+                          `${dataset.name}_profile.json`;
+
+                        a.click();
+
+                        URL.revokeObjectURL(url);
+
+                      }}
+                      className="cursor-pointer rounded-xl border border-indigo-100 bg-indigo-50 p-5 transition-all duration-200 hover:border-indigo-600 hover:bg-indigo-600 hover:text-white hover:shadow-lg"
+                    >
+
+                      <div className="font-semibold">
+                        Export Profile
+                      </div>
+
+                      <div className="mt-2 text-xs opacity-70">
+                        Metadata, preview and profiling (.json)
+                      </div>
+
+                    </button>
+
+                    {/* Report */}
+
+                    <button
+                      onClick={() => {
+
+                        const blob = new Blob(
+                          [
+                            JSON.stringify(
+                              dataset.report,
+                              null,
+                              2
+                            ),
+                          ],
+                          {
+                            type: "application/json",
+                          }
+                        );
+
+                        const url =
+                          URL.createObjectURL(blob);
+
+                        const a =
+                          document.createElement("a");
+
+                        a.href = url;
+
+                        a.download =
+                          `${dataset.name}_report.json`;
+
+                        a.click();
+
+                        URL.revokeObjectURL(url);
+
+                      }}
+                      className="cursor-pointer rounded-xl border border-indigo-100 bg-indigo-50 p-5 transition-all duration-200 hover:border-indigo-600 hover:bg-indigo-600 hover:text-white hover:shadow-lg"
+                    >
+
+                      <div className="font-semibold">
+                        Export Report
+                      </div>
+
+                      <div className="mt-2 text-xs opacity-70">
+                        Quality scores and recommendations (.json)
+                      </div>
+
+                    </button>
+
+                  </div>
+
+                </div>
+
               </div>
             ),
-          },
+          }
         ]}
       />
+      </div>
     </DashboardLayout>
   );
 }

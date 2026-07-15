@@ -6,9 +6,14 @@ export default function PreviewTable({ rows }) {
 
   return (
 
-    <div className="mt-8 overflow-x-auto rounded-2xl border bg-white shadow-sm">
+    <div className="mt-6 overflow-hidden rounded-2xl border border-slate-900 bg-white shadow-sm">
 
-      <table className="w-full text-sm">
+    <h2 className="border-b bg-slate-50 p-5 text-xl font-semibold">
+        Preview (First 5 Rows)
+    </h2>
+
+    <div className="overflow-x-auto">
+        <table className="min-w-full table-auto text-sm">
 
         <thead className="bg-slate-50">
 
@@ -42,9 +47,10 @@ export default function PreviewTable({ rows }) {
 
                 <td
                   key={header}
-                  className="p-3"
+                  className="max-w-[180px] truncate p-3"
+                  title={String(row[header])}
                 >
-                  {String(row[header])}
+                    {String(row[header])}
                 </td>
 
               ))}
@@ -55,9 +61,18 @@ export default function PreviewTable({ rows }) {
 
         </tbody>
 
-      </table>
+
+        </table>
 
     </div>
 
+</div>
+
   );
 }
+
+
+
+
+
+      

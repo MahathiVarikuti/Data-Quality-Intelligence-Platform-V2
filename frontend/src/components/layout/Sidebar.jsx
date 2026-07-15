@@ -29,7 +29,7 @@ const links = [
 
 export default function Sidebar() {
   return (
-    <aside className="flex h-screen w-72 flex-col border-r border-slate-200 bg-white/80 backdrop-blur-xl">
+    <aside className="sticky top-0 flex h-screen w-72 flex-shrink-0 flex-col border-r border-slate-200 bg-white/80 backdrop-blur-xl">
 
       <div className="flex items-center gap-3 border-b p-7">
 

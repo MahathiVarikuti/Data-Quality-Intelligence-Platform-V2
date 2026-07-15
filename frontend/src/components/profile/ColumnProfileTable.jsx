@@ -1,20 +1,24 @@
 export default function ColumnProfileTable({ columns }) {
   return (
-    <div className="mt-8 overflow-x-auto rounded-2xl border bg-white shadow-sm">
+    <div className="mt-6 overflow-x-auto rounded-2xl border bg-white shadow-sm">
 
-      <table className="w-full text-sm">
+      <h2 className="border-b bg-slate-50 p-5 text-xl font-semibold">
+          Column Profiling
+      </h2>
+      <div className="max-h-[400px] overflow-auto p-0">
+      <table className="w-full table-auto text-sm">
 
-        <thead className="bg-slate-50">
+        <thead className="sticky top-0 z-10 bg-slate-50">
           <tr>
-            <th className="p-4 text-left">Column</th>
-            <th className="text-left">Type</th>
-            <th className="text-left">Missing</th>
-            <th className="text-left">Unique</th>
-            <th className="text-left">Mean</th>
-            <th className="text-left">Median</th>
-            <th className="text-left">Min</th>
-            <th className="text-left">Max</th>
-            <th className="text-left">Top Values</th>
+            <th className="w-10 p-4 text-left">Column</th>
+            <th className="w-22 text-left">Type</th>
+            <th className="w-24 text-left">Missing</th>
+            <th className="w-24 text-left">Unique</th>
+            <th className="w-28 text-left">Mean</th>
+            <th className="w-28 text-left">Median</th>
+            <th className="w-24 text-left">Min</th>
+            <th className="w-24 text-left">Max</th>
+            <th className="w-64 text-left">Top Values</th>
           </tr>
         </thead>
 
@@ -31,26 +35,40 @@ export default function ColumnProfileTable({ columns }) {
                 {col.name}
               </td>
 
-              <td>{col.type}</td>
+              <td className="max-w-[140px] break-all px-4 py-3">
+                  {col.type}
+              </td>
 
-              <td>{col.missing}</td>
+              <td className="max-w-[140px] break-all px-4 py-3">
+                  {col.missing}
+              </td>
 
-              <td>{col.unique}</td>
+              <td className="max-w-[140px] break-all px-4 py-3">
+                  {col.unique}
+              </td>
 
-              <td>{col.mean ?? "--"}</td>
+              <td className="max-w-[140px] break-all px-4 py-3">
+                  {col.mean ?? "--"}
+              </td>
 
-              <td>{col.median ?? "--"}</td>
+              <td className="max-w-[140px] break-all px-4 py-3">
+                  {col.median ?? "--"}
+              </td>
 
-              <td>{col.min ?? "--"}</td>
+              <td className="max-w-[140px] break-all px-4 py-3">
+                  {col.min ?? "--"}
+              </td>
 
-              <td>{col.max ?? "--"}</td>
+              <td className="max-w-[140px] break-all px-4 py-3">
+                  {col.max ?? "--"}
+              </td>
 
-              <td>
-
-                {col.top_values
-                  ? col.top_values.join(", ")
-                  : "--"}
-
+              <td
+                  className="max-w-[220px] break-all px-4 py-3"
+              >
+                  {col.top_values
+                      ? col.top_values.join(", ")
+                      : "--"}
               </td>
 
             </tr>
@@ -60,6 +78,7 @@ export default function ColumnProfileTable({ columns }) {
         </tbody>
 
       </table>
+      </div>
 
     </div>
   );

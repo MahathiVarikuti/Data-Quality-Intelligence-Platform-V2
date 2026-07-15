@@ -21,7 +21,9 @@ export default function Tabs({ tabs }) {
         ))}
       </div>
 
-      <div>{tabs[active].content}</div>
+      <div className="min-w-0 overflow-hidden">
+          {tabs[active].content}
+      </div>
     </>
   );
 }

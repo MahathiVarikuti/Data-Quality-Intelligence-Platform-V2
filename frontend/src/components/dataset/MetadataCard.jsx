@@ -4,7 +4,7 @@ export default function MetadataCard({
     value,
 }) {
     return (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+        <div className="rounded-2xl border bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
 
             <div className="mb-4 text-indigo-600">
                 {icon}
@@ -14,7 +14,7 @@ export default function MetadataCard({
                 {title}
             </p>
 
-            <h2 className="mt-2 text-3xl font-bold">
+            <h2 className="mt-2 text-2xl font-bold">
                 {value}
             </h2>
 

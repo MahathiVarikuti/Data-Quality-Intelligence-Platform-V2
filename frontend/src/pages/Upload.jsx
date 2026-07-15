@@ -2,6 +2,7 @@ import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import UploadZone from "../components/upload/UploadZone";
 import { uploadDataset } from "../api/dataset";
+import DatasetTable from "../components/dashboard/DatasetTable";
 
 export default function Upload() {
   const [file, setFile] = useState(null);
@@ -34,26 +35,32 @@ export default function Upload() {
       <UploadZone onFileSelect={handleUpload} />
 
       {file && (
-        <div className="mt-6 rounded-xl border bg-white p-6">
-          <h3 className="font-semibold">
-            Selected File
-          </h3>
+          <div className="mt-6 rounded-xl border bg-white p-6">
 
-          <p className="mt-2">
-            {file.name}
-          </p>
+              <h3 className="font-semibold">
+                  Selected File
+              </h3>
 
-          <p className="text-sm text-slate-500">
-            {(file.size / 1024).toFixed(2)} KB
-          </p>
+              <p className="mt-2">
+                  {file.name}
+              </p>
 
-          {uploading && (
-            <p className="mt-4 text-blue-600">
-              Uploading...
-            </p>
-          )}
-        </div>
+              <p className="text-sm text-slate-500">
+                  {(file.size / 1024).toFixed(2)} KB
+              </p>
+
+              {uploading && (
+                  <p className="mt-4 text-blue-600">
+                      Uploading...
+                  </p>
+              )}
+
+          </div>
       )}
+
+      <div className="mt-10">
+          <DatasetTable />
+      </div>
     </DashboardLayout>
   );
-}
+} 
