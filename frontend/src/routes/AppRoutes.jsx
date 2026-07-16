@@ -6,7 +6,7 @@ import DatasetDetails from "../pages/DatasetDetails";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
-
+import Datasets from "../pages/Datasets";
 
 export default function AppRoutes() {
   return (
@@ -18,6 +18,7 @@ export default function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/datasets" element={<Datasets />} />
       </Routes>
     </BrowserRouter>
   );
