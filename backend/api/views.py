@@ -223,6 +223,33 @@ def delete_dataset(request, dataset_id):
     )
 
 
+@api_view(["PATCH"])
+@permission_classes([AllowAny])
+def rename_dataset(request, dataset_id):
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+    )
+
+    new_name = request.data.get("name", "").strip()
+
+    if not new_name:
+        return Response(
+            {"error": "Name is required"},
+            status=400,
+        )
+
+    dataset.name = new_name
+    dataset.save()
+
+    return Response(
+        {
+            "success": True,
+            "name": dataset.name,
+        }
+    )
+
 
 from django.http import FileResponse
 

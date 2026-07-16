@@ -65,3 +65,16 @@ export async function deleteDataset(id) {
         `datasets/${id}/delete/`
     );
 }
+
+
+export async function renameDataset(id, name) {
+
+    const { data } = await api.patch(
+        `datasets/${id}/rename/`,
+        {
+            name,
+        }
+    );
+
+    return data;
+}

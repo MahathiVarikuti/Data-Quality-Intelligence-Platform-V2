@@ -8,6 +8,7 @@ from .views import (
     cleaning_api,
     delete_dataset,
     export_dataset,
+    rename_dataset,
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path("profile/<int:dataset_id>/", profile_api),
     path("clean/<int:dataset_id>/",cleaning_api),
     path("datasets/<int:dataset_id>/delete/",delete_dataset),
+    path("datasets/<int:dataset_id>/rename/",rename_dataset,),
     path("datasets/<int:dataset_id>/export/",export_dataset),
 
 ]

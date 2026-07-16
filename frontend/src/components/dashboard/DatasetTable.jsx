@@ -5,6 +5,8 @@ import { FileSpreadsheet, Search, Trash2, ExternalLink } from "lucide-react";
 import {
     getDatasets,
     deleteDataset,
+    renameDataset,
+
 } from "../../api/dataset";
 export default function DatasetTable() {
   const [datasets, setDatasets] = useState([]);
@@ -82,6 +84,43 @@ export default function DatasetTable() {
       alert("Delete failed.");
 
     }
+  }
+
+  async function handleRename(dataset) {
+
+      const newName = window.prompt(
+          "Enter new dataset name",
+          dataset.name
+      );
+
+      if (!newName) return;
+
+      try {
+
+          await renameDataset(
+              dataset.id,
+              newName
+          );
+
+          setDatasets((prev) =>
+              prev.map((d) =>
+                  d.id === dataset.id
+                      ? {
+                            ...d,
+                            name: newName,
+                        }
+                      : d
+              )
+          );
+
+      } catch (err) {
+
+          console.error(err);
+
+          alert("Rename failed.");
+
+      }
+
   }
 
   if (loading) {
@@ -234,6 +273,16 @@ export default function DatasetTable() {
 
                   </td>
 
+                  <td>
+
+                      <button
+                          onClick={() => handleRename(dataset)}
+                          className="rounded-lg border border-blue-200 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50"
+                      >
+                          Rename
+                      </button>
+
+                  </td>
                   <td>
 
                     <button
