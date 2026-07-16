@@ -8,7 +8,12 @@ import {
     renameDataset,
 
 } from "../../api/dataset";
-export default function DatasetTable() {
+export default function DatasetTable({
+    limit = null,
+    showRename = true,
+    showDelete = true,
+
+  }) {
   const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -36,14 +41,20 @@ export default function DatasetTable() {
   }, []);
 
   const filteredDatasets = useMemo(() => {
-    return datasets
-      .filter((dataset) =>
-        dataset.name
-          .toLowerCase()
-          .includes(search.toLowerCase())
-      )
-      .slice(0, 5);
-  }, [datasets, search]);
+
+    let data = datasets.filter((dataset) =>
+      dataset.name
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
+
+    if (limit !== null) {
+      data = data.slice(0, limit);
+    }
+
+    return data;
+
+  }, [datasets, search, limit]);
 
   function badge(status) {
     switch (status) {
@@ -194,11 +205,11 @@ export default function DatasetTable() {
 
                 <th className="p-4 text-left">Name</th>
 
-                <th className="text-left">Rows</th>
+                <th className="text-center">Rows</th>
 
-                <th className="text-left">Columns</th>
+                <th className="text-center">Columns</th>
 
-                <th className="text-left">Status</th>
+                <th className="text-center">Status</th>
 
                 <th className="text-left">Uploaded</th>
 
@@ -230,14 +241,18 @@ export default function DatasetTable() {
 
                   </td>
 
-                  <td>{dataset.num_rows ?? "--"}</td>
+                  <td className="text-center">
+                    {dataset.num_rows ?? "--"}
+                  </td>
 
-                  <td>{dataset.num_columns ?? "--"}</td>
+                  <td className="text-center">
+                    {dataset.num_columns ?? "--"}
+                  </td>
 
-                  <td>
+                  <td className="text-center">
 
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${badge(dataset.status)}`}
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${badge(dataset.status)}`}
                     >
                       {dataset.status}
                     </span>
@@ -273,26 +288,32 @@ export default function DatasetTable() {
 
                   </td>
 
-                  <td>
+                  {showRename && (
+                    <td>
 
                       <button
-                          onClick={() => handleRename(dataset)}
-                          className="rounded-lg border border-blue-200 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50"
+                        onClick={() => handleRename(dataset)}
+                        className="rounded-lg border border-blue-200 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50"
                       >
-                          Rename
+                        Rename
                       </button>
 
-                  </td>
-                  <td>
+                    </td>
+                  )}
+                  {showDelete && (
 
-                    <button
-                      onClick={() => handleDelete(dataset.id)}
-                      className="rounded-lg border border-red-200 p-2 text-red-600 hover:bg-red-50"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <td>
 
-                  </td>
+                      <button
+                        onClick={() => handleDelete(dataset.id)}
+                        className="rounded-lg border border-red-200 p-2 text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
+                    </td>
+
+                  )}
 
                 </tr>
 

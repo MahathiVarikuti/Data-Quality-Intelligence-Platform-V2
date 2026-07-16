@@ -1,15 +1,20 @@
+import { useState } from "react";
 import { cleanDataset } from "../../api/dataset";
 
 export default function CleaningPanel({ datasetId }) {
 
+  const [result, setResult] = useState(null);
+
   async function run(action) {
+
     try {
 
-      await cleanDataset(datasetId, action);
+      const response = await cleanDataset(
+        datasetId,
+        action
+      );
 
-      alert("Cleaning completed.");
-
-      window.location.reload();
+      setResult(response);
 
     } catch (err) {
 
@@ -18,6 +23,7 @@ export default function CleaningPanel({ datasetId }) {
       alert("Cleaning failed.");
 
     }
+
   }
 
   return (
@@ -36,7 +42,7 @@ export default function CleaningPanel({ datasetId }) {
 
           <div className="rounded-lg border p-5">
 
-            <h3 className="font-semibold text-lg">
+            <h3 className="text-lg font-semibold">
               Duplicate Handling
             </h3>
 
@@ -57,7 +63,7 @@ export default function CleaningPanel({ datasetId }) {
 
           <div className="rounded-lg border p-5">
 
-            <h3 className="font-semibold text-lg">
+            <h3 className="text-lg font-semibold">
               Missing Values
             </h3>
 
@@ -78,7 +84,7 @@ export default function CleaningPanel({ datasetId }) {
 
           <div className="rounded-lg border p-5">
 
-            <h3 className="font-semibold text-lg">
+            <h3 className="text-lg font-semibold">
               Text Standardization
             </h3>
 
@@ -99,7 +105,7 @@ export default function CleaningPanel({ datasetId }) {
 
           <div className="rounded-lg border p-5">
 
-            <h3 className="font-semibold text-lg">
+            <h3 className="text-lg font-semibold">
               Outlier Detection
             </h3>
 
@@ -118,9 +124,50 @@ export default function CleaningPanel({ datasetId }) {
 
         </div>
 
+        {result && (
+
+          <div className="mt-8 rounded-xl border border-green-200 bg-green-50 p-5">
+
+            <h3 className="mb-4 text-lg font-semibold text-green-700">
+              Cleaning Results
+            </h3>
+
+            <div className="space-y-3 text-sm">
+
+              <p>
+
+                ✓ <span className="font-medium">Overall Score:</span>{" "}
+
+                {result.before.overall}% → {result.after.overall}%
+
+              </p>
+
+              <p>
+
+                ✓ <span className="font-medium">Missing Values:</span>{" "}
+
+                {result.before.missing} → {result.after.missing}
+
+              </p>
+
+              <p>
+
+                ✓ <span className="font-medium">Duplicate Rows:</span>{" "}
+
+                {result.before.duplicates} → {result.after.duplicates}
+
+              </p>
+
+            </div>
+
+          </div>
+
+        )}
+
       </div>
 
     </div>
 
   );
+
 }

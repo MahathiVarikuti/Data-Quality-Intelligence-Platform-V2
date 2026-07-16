@@ -137,7 +137,9 @@ def cleaning_api(request, dataset_id):
     dataset = get_object_or_404(Dataset, id=dataset_id)
 
     action = request.data.get("action")
-
+    old_report = ValidationReport.objects.get(
+        dataset=dataset
+    )
     df = DatasetService.load(dataset)
 
     if action == "duplicates":
@@ -195,10 +197,35 @@ def cleaning_api(request, dataset_id):
     dataset.save()
 
     return Response({
+
         "success": True,
+
+        "action": action,
+
         "rows": len(cleaned),
+
         "columns": len(cleaned.columns),
-        "report": report,
+
+        "before": {
+
+            "overall": old_report.overall_score,
+
+            "missing": old_report.total_missing,
+
+            "duplicates": old_report.duplicate_count,
+
+        },
+
+        "after": {
+
+            "overall": report["overall_score"],
+
+            "missing": report["total_missing"],
+
+            "duplicates": report["duplicate_count"],
+
+        }
+
     })
 
 

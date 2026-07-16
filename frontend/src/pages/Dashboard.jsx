@@ -86,7 +86,12 @@ export default function Dashboard() {
       <div className="mt-10 grid gap-8 lg:grid-cols-3">
 
         <div className="lg:col-span-2">
-          <DatasetTable />
+          <DatasetTable
+            limit={5}
+            showRename={false}
+            showDelete={false}
+
+          />
         </div>
 
         <div className="h-full">
