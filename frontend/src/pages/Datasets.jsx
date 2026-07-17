@@ -5,7 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { getDashboard } from "../api/dataset";
 
 import StatCard from "../components/dashboard/StatCard";
-
+import DashboardSkeleton from "../components/skeleton/DashboardSkeleton";
 import QualityDistributionChart from "../components/analytics/QualityDistributionChart";
 import QualityRadarChart from "../components/analytics/QualityRadarChart";
 import CleaningRequiredTable from "../components/analytics/CleaningRequiredTable";
@@ -42,9 +42,7 @@ export default function Datasets() {
 
             <DashboardLayout>
 
-                <div className="mt-20 text-center">
-                    Loading analytics...
-                </div>
+                <DashboardSkeleton />
 
             </DashboardLayout>
 

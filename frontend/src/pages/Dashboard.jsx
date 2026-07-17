@@ -33,9 +33,7 @@ export default function Dashboard() {
   if (!stats) {
     return (
       <DashboardLayout>
-        <div className="mt-20 text-center">
-          Loading dashboard...
-        </div>
+        <div>Loading...</div>
       </DashboardLayout>
     );
   }

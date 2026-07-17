@@ -35,12 +35,16 @@ export async function getProfile(id) {
 }
 
 
-export async function cleanDataset(id, action, columns = []) {
+export async function cleanDataset(
+    id,
+    action,
+    options = {}
+) {
     const { data } = await api.post(
         `clean/${id}/`,
         {
             action,
-            columns,
+            ...options,
         }
     );
 
@@ -74,6 +78,32 @@ export async function renameDataset(id, name) {
         {
             name,
         }
+    );
+
+    return data;
+}
+
+export async function getOutliers(id) {
+    const { data } = await api.get(
+        `datasets/${id}/outliers/`
+    );
+
+    return data;
+}
+
+
+export async function undoCleaning(id) {
+    const { data } = await api.post(
+        `datasets/${id}/undo/`
+    );
+
+    return data;
+}
+
+
+export async function restoreOriginal(id) {
+    const { data } = await api.post(
+        `datasets/${id}/restore/`
     );
 
     return data;

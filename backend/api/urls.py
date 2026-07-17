@@ -9,6 +9,9 @@ from .views import (
     delete_dataset,
     export_dataset,
     rename_dataset,
+    detect_outliers_api,
+    undo_cleaning_api,
+    restore_original_api,
 )
 
 urlpatterns = [
@@ -21,5 +24,7 @@ urlpatterns = [
     path("datasets/<int:dataset_id>/delete/",delete_dataset),
     path("datasets/<int:dataset_id>/rename/",rename_dataset,),
     path("datasets/<int:dataset_id>/export/",export_dataset),
-
+    path("datasets/<int:dataset_id>/outliers/",detect_outliers_api,),
+    path("datasets/<int:dataset_id>/undo/",undo_cleaning_api,),
+    path("datasets/<int:dataset_id>/restore/",restore_original_api,),
 ]

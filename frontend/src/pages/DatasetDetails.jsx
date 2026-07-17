@@ -13,7 +13,7 @@ import ProfileSummary from "../components/profile/ProfileSummary";
 import ColumnProfileTable from "../components/profile/ColumnProfileTable";
 import PreviewTable from "../components/profile/PreviewTable";
 import CleaningPanel from "../components/cleaning/CleaningPanel";
-
+import CardSkeleton from "../components/skeleton/CardSkeleton";
 import {
   Database,
   FileText,
@@ -50,9 +50,22 @@ export default function DatasetDetails() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="mt-20 text-center">
-          Loading dataset...
+
+        <div className="mb-8">
+
+          <div className="h-8 w-72 animate-pulse rounded bg-slate-200"></div>
+
         </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+
+        </div>
+
       </DashboardLayout>
     );
   }
@@ -226,10 +239,13 @@ export default function DatasetDetails() {
           },
 
           {
-            label: "Cleaning",
-            content: (
-              <CleaningPanel datasetId={dataset.id} />
-            ),
+              label: "Cleaning",
+              content: (
+                  <CleaningPanel
+                      datasetId={dataset.id}
+                      profile={profile}
+                  />
+              ),
           },
 
           {

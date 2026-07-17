@@ -134,25 +134,82 @@ def profile_api(request, dataset_id):
 @permission_classes([AllowAny])
 def cleaning_api(request, dataset_id):
 
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+    )
 
     action = request.data.get("action")
+
     old_report = ValidationReport.objects.get(
         dataset=dataset
     )
+
+    # Create permanent original backup.
+    # This is only created once.
+    DatasetService.create_original_backup(
+        dataset
+    )
+
+    # Save current state for one-level undo.
+    # This gets replaced before every cleaning action.
+    DatasetService.create_undo_backup(
+        dataset
+    )
+
+    # Load current dataset for cleaning.
     df = DatasetService.load(dataset)
 
     if action == "duplicates":
         cleaned = CleaningService.remove_duplicates(df)
 
     elif action == "missing":
-        cleaned = CleaningService.fill_missing(df)
+
+        strategies = request.data.get(
+            "strategies",
+            {},
+        )
+
+        custom_values = request.data.get(
+            "customValues",
+            {},
+        )
+
+        cleaned = CleaningService.fill_missing(
+            df,
+            strategies=strategies,
+            custom_values=custom_values,
+        )
 
     elif action == "normalize":
-        cleaned = CleaningService.normalize_text(df)
+
+        columns = request.data.get(
+            "columns",
+            [],
+        )
+
+        operation = request.data.get(
+            "operation",
+            "trim",
+        )
+
+        cleaned = CleaningService.normalize_text(
+            df,
+            columns=columns,
+            operation=operation,
+        )
 
     elif action == "outliers":
-        cleaned = CleaningService.remove_outliers(df)
+
+        columns = request.data.get(
+            "columns",
+            [],
+        )
+
+        cleaned = CleaningService.remove_outliers(
+            df,
+            columns=columns,
+        )
 
     elif action == "columns":
         columns = request.data.get("columns", [])
@@ -226,6 +283,148 @@ def cleaning_api(request, dataset_id):
 
         }
 
+    })
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def undo_cleaning_api(request, dataset_id):
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+    )
+
+    restored = DatasetService.undo_last_action(
+        dataset
+    )
+
+    if not restored:
+        return Response(
+            {
+                "success": False,
+                "message": "No cleaning action available to undo.",
+            },
+            status=400,
+        )
+
+    # Load restored dataset
+    df = DatasetService.load(dataset)
+
+    # Update rows, columns and file size
+    DatasetService.update_metadata(
+        dataset,
+        df,
+        status="validated",
+    )
+
+    # Recalculate quality report
+    report = QualityService.compute_report(df)
+
+    ValidationReport.objects.update_or_create(
+        dataset=dataset,
+        defaults={
+            "completeness_score": report["completeness_score"],
+            "uniqueness_score": report["uniqueness_score"],
+            "validity_score": report["validity_score"],
+            "consistency_score": report["consistency_score"],
+            "overall_score": report["overall_score"],
+            "total_missing": report["total_missing"],
+            "duplicate_count": report["duplicate_count"],
+            "invalid_email_count": report["invalid_email_count"],
+            "invalid_type_count": report["invalid_type_count"],
+            "issue_summary": report["issue_summary"],
+            "recommendations": report["recommendations"],
+        },
+    )
+
+    return Response({
+        "success": True,
+        "message": "Last cleaning action undone successfully.",
+        "rows": len(df),
+        "columns": len(df.columns),
+        "overallScore": report["overall_score"],
+    })
+
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def restore_original_api(request, dataset_id):
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+    )
+
+    restored = DatasetService.restore_original(
+        dataset
+    )
+
+    if not restored:
+        return Response(
+            {
+                "success": False,
+                "message": "Original dataset backup is not available.",
+            },
+            status=400,
+        )
+
+    # Load original dataset
+    df = DatasetService.load(dataset)
+
+    # Update metadata
+    DatasetService.update_metadata(
+        dataset,
+        df,
+        status="validated",
+    )
+
+    # Recalculate quality report
+    report = QualityService.compute_report(df)
+
+    ValidationReport.objects.update_or_create(
+        dataset=dataset,
+        defaults={
+            "completeness_score": report["completeness_score"],
+            "uniqueness_score": report["uniqueness_score"],
+            "validity_score": report["validity_score"],
+            "consistency_score": report["consistency_score"],
+            "overall_score": report["overall_score"],
+            "total_missing": report["total_missing"],
+            "duplicate_count": report["duplicate_count"],
+            "invalid_email_count": report["invalid_email_count"],
+            "invalid_type_count": report["invalid_type_count"],
+            "issue_summary": report["issue_summary"],
+            "recommendations": report["recommendations"],
+        },
+    )
+
+    return Response({
+        "success": True,
+        "message": "Dataset restored to its original version.",
+        "rows": len(df),
+        "columns": len(df.columns),
+        "overallScore": report["overall_score"],
+    })
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def detect_outliers_api(request, dataset_id):
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+    )
+
+    df = DatasetService.load(dataset)
+
+    outliers = CleaningService.detect_outliers(df)
+
+    return Response({
+        "dataset": dataset.name,
+        "outliers": outliers,
     })
 
 
