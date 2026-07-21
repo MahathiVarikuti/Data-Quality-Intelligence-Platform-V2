@@ -3,6 +3,8 @@ import {
 } from "lucide-react";
 
 export default function Navbar() {
+  const username =
+    localStorage.getItem("username") || "User";
   return (
     <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-slate-200 bg-white/80 px-8 backdrop-blur-xl">
 
@@ -44,12 +46,9 @@ export default function Navbar() {
           <div>
 
             <p className="text-sm font-semibold">
-              Mahathi
+              {username}
             </p>
 
-            <p className="text-xs text-slate-500">
-              User
-            </p>
 
           </div>
 

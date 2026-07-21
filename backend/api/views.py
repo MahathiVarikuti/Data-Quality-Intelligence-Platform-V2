@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from datasets.models import Dataset, ValidationReport
@@ -19,17 +19,28 @@ from django.http import FileResponse
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dataset_list(request):
-    datasets = Dataset.objects.all().order_by("-uploaded_at")
-    serializer = DatasetSerializer(datasets, many=True)
+    datasets = Dataset.objects.filter(
+        user=request.user
+    ).order_by("-uploaded_at")
+
+    serializer = DatasetSerializer(
+        datasets,
+        many=True
+    )
+
     return Response(serializer.data)
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dataset_detail(request, dataset_id):
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+        user=request.user,
+    )
     serializer = DatasetSerializer(dataset)
     return Response(serializer.data)
 
@@ -46,7 +57,7 @@ def upload_dataset(request):
         )
 
     dataset = Dataset.objects.create(
-        user=User.objects.first(),
+        user=request.user,
         name=uploaded_file.name,
         file=uploaded_file,
         status="uploaded",
@@ -92,9 +103,13 @@ def upload_dataset(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def report_api(request, dataset_id):
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+        user=request.user,
+    )
     report = get_object_or_404(
         ValidationReport,
         dataset=dataset,
@@ -118,10 +133,14 @@ def report_api(request, dataset_id):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def profile_api(request, dataset_id):
 
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+        user=request.user,
+    )
 
     df = DatasetService.load(dataset)
 
@@ -131,12 +150,13 @@ def profile_api(request, dataset_id):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def cleaning_api(request, dataset_id):
 
     dataset = get_object_or_404(
         Dataset,
         id=dataset_id,
+        user=request.user,
     )
 
     action = request.data.get("action")
@@ -287,12 +307,13 @@ def cleaning_api(request, dataset_id):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def undo_cleaning_api(request, dataset_id):
 
     dataset = get_object_or_404(
         Dataset,
         id=dataset_id,
+        user=request.user,
     )
 
     restored = DatasetService.undo_last_action(
@@ -349,12 +370,13 @@ def undo_cleaning_api(request, dataset_id):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def restore_original_api(request, dataset_id):
 
     dataset = get_object_or_404(
         Dataset,
         id=dataset_id,
+        user=request.user,
     )
 
     restored = DatasetService.restore_original(
@@ -410,12 +432,13 @@ def restore_original_api(request, dataset_id):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def detect_outliers_api(request, dataset_id):
 
     dataset = get_object_or_404(
         Dataset,
         id=dataset_id,
+        user=request.user,
     )
 
     df = DatasetService.load(dataset)
@@ -431,12 +454,13 @@ def detect_outliers_api(request, dataset_id):
 
 
 @api_view(["DELETE"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def delete_dataset(request, dataset_id):
 
     dataset = get_object_or_404(
         Dataset,
         id=dataset_id,
+        user=request.user,
     )
 
     DatasetService.delete_file(dataset)
@@ -450,12 +474,13 @@ def delete_dataset(request, dataset_id):
 
 
 @api_view(["PATCH"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def rename_dataset(request, dataset_id):
 
     dataset = get_object_or_404(
         Dataset,
         id=dataset_id,
+        user=request.user,
     )
 
     new_name = request.data.get("name", "").strip()
@@ -480,12 +505,13 @@ def rename_dataset(request, dataset_id):
 from django.http import FileResponse
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def export_dataset(request, dataset_id):
 
     dataset = get_object_or_404(
         Dataset,
         id=dataset_id,
+        user=request.user,
     )
 
     response = FileResponse(
@@ -498,3 +524,55 @@ def export_dataset(request, dataset_id):
     )
 
     return response
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def register_api(request):
+
+    username = request.data.get("username")
+    email = request.data.get("email")
+    password = request.data.get("password")
+
+    if not username or not email or not password:
+        return Response(
+            {
+                "error": "Username, email and password are required."
+            },
+            status=400,
+        )
+
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {
+                "error": "Username already exists."
+            },
+            status=400,
+        )
+
+    if User.objects.filter(email=email).exists():
+        return Response(
+            {
+                "error": "Email already exists."
+            },
+            status=400,
+        )
+
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+    )
+
+    return Response(
+        {
+            "success": True,
+            "message": "Account created successfully.",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+            },
+        },
+        status=201,
+    )

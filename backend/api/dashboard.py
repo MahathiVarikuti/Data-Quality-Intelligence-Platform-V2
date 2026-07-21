@@ -1,18 +1,19 @@
 from collections import Counter
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from datasets.models import Dataset, ValidationReport
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dashboard_summary(request):
 
-    datasets = Dataset.objects.all()
-
+    datasets = Dataset.objects.filter(
+        user=request.user
+    )
     total = datasets.count()
 
     cleaned = datasets.filter(status="cleaned").count()
@@ -30,7 +31,11 @@ def dashboard_summary(request):
         storage / (1024 * 1024),
         2,
     )
-    reports = list(ValidationReport.objects.all())
+    reports = list(
+        ValidationReport.objects.filter(
+            dataset__user=request.user
+        )
+    )
 
     scores = [
         report.overall_score

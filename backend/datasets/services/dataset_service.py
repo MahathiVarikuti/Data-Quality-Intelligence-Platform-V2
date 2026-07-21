@@ -147,7 +147,14 @@ class DatasetService:
 
     @staticmethod
     def delete_file(dataset: Dataset) -> None:
-        """Delete the dataset file from disk."""
+        """Delete dataset and backup files."""
 
-        if os.path.exists(dataset.file.path):
-            os.remove(dataset.file.path)
+        paths = [
+            dataset.file.path,
+            DatasetService.get_original_backup_path(dataset),
+            DatasetService.get_undo_backup_path(dataset),
+        ]
+
+        for path in paths:
+            if os.path.exists(path):
+                os.remove(path)

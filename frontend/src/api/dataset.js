@@ -10,6 +10,11 @@ export async function getDataset(id) {
     return data;
 }
 
+export async function getProfile(id) {
+    const { data } = await api.get(`profile/${id}/`);
+    return data;
+}
+
 export async function uploadDataset(file) {
     const formData = new FormData();
 
@@ -28,11 +33,6 @@ export async function uploadDataset(file) {
     return data;
 }
 
-
-export async function getProfile(id) {
-    const { data } = await api.get(`profile/${id}/`);
-    return data;
-}
 
 
 export async function cleanDataset(
@@ -59,7 +59,9 @@ export async function getDashboard() {
 }
 
 export async function getReport(id) {
-    const { data } = await api.get(`report/${id}/`);
+    const { data } = await api.get(
+        `datasets/${id}/report/`
+    );
     return data;
 }
 

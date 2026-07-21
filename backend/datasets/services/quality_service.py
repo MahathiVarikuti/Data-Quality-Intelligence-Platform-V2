@@ -1,4 +1,3 @@
-import re
 import pandas as pd
 
 
@@ -22,7 +21,6 @@ class QualityService:
         duplicate_count = int(df.duplicated().sum())
         invalid_email_count = 0
         invalid_email_samples = []
-        QualityService.EMAIL_PATTERN
         for col in df.columns:
             if 'email' in col.lower():
                 inv = df[col].dropna().astype(str)

@@ -2,11 +2,13 @@ import {
   LayoutDashboard,
   Upload,
   FileText,
-  BarChart3,
-  Settings,
   Database,
+  LogOut,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+
+import { NavLink, useNavigate } from "react-router-dom";
+import { logoutUser } from "../../api/auth";
+
 
 const links = [
   {
@@ -28,6 +30,13 @@ const links = [
 ];
 
 export default function Sidebar() {
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/login");
+  };
   return (
     <aside className="sticky top-0 flex h-screen w-72 flex-shrink-0 flex-col border-r border-slate-200 bg-white/80 backdrop-blur-xl">
 
@@ -72,11 +81,14 @@ export default function Sidebar() {
 
       <div className="border-t p-5">
 
-        <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 hover:bg-slate-100">
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 hover:bg-red-50 transition-all"
+        >
 
-          <Settings size={18} />
+          <LogOut size={18} />
 
-          Settings
+          Logout
 
         </button>
 

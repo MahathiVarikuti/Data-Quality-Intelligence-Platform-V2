@@ -168,10 +168,10 @@ class CleaningService:
         return cleaned
 
     @staticmethod
-    def remove_columns(
-        df: pd.DataFrame,
-        columns,
-    ):
+    def remove_columns(df, columns):
+
+        if len(columns) >= len(df.columns):
+            return df
 
         return df.drop(
             columns=columns,

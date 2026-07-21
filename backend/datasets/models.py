@@ -10,7 +10,11 @@ class Dataset(models.Model):
         ('cleaned', 'Cleaned'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        db_index=True,
+    )
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to='datasets/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -22,6 +26,8 @@ class Dataset(models.Model):
     initial_duplicate_count = models.IntegerField(null=True, blank=True)
     initial_overall_score = models.FloatField(null=True, blank=True)
 
+    class Meta:
+        ordering = ["-uploaded_at"]
     def __str__(self):
         return self.name
 
