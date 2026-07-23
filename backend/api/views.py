@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from datasets.models import Dataset, ValidationReport
@@ -46,7 +46,7 @@ def dataset_detail(request, dataset_id):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def upload_dataset(request):
     uploaded_file = request.FILES.get("file")
 
