@@ -18,6 +18,7 @@ export default function NormalizeTextModal({
       return (
         type.includes("object") ||
         type.includes("string") ||
+        type.includes("str") ||
         type.includes("text")
       );
     }
