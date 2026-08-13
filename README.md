@@ -102,9 +102,9 @@ It includes:
 - Datasets requiring cleaning
 - Latest quality alerts
 
-![Dataset Analytics](docs/screenshots/datasets-1.png)
+![Dataset Analytics](docs/screenshots/datasets1.png)
 
-![Cleaning Required and Alerts](docs/screenshots/datasets-2.png)
+![Cleaning Required and Alerts](docs/screenshots/datasets2.png)
 
 ---
 
@@ -199,9 +199,9 @@ For each column, the platform can display information such as:
 
 A preview of the first five rows is also provided.
 
-![Dataset Profiling](docs/screenshots/profile-1.png)
+![Dataset Profiling](docs/screenshots/profile1.png)
 
-![Dataset Profiling and Preview](docs/screenshots/profile-2.png)
+![Dataset Profiling and Preview](docs/screenshots/profile2.png)
 
 This makes it possible to understand the structure and quality of a dataset before modifying it.
 
@@ -223,7 +223,7 @@ Available operations include:
 | Undo Last Action | Reverts the most recent cleaning operation |
 | Restore Original | Restores the originally uploaded dataset |
 
-![Cleaning Actions](docs/screenshots/cleaning-actions.png)
+![Cleaning Actions](docs/screenshots/cleaningactions.png)
 
 ---
 
@@ -255,7 +255,7 @@ Supported strategies include:
 
 The interface also distinguishes between numeric and text columns.
 
-![Fill Missing Values](docs/screenshots/fill-missing.png)
+![Fill Missing Values](docs/screenshots/fillmissing.png)
 
 For example:
 
@@ -337,7 +337,7 @@ The interface shows:
 - Selected columns
 - Number of selected columns
 
-![Remove Columns](docs/screenshots/column-drop.png)
+![Remove Columns](docs/screenshots/columndrop.png)
 
 This is particularly useful for removing columns that are:
 
@@ -415,7 +415,7 @@ Exports the calculated quality scores, detected issues, and recommendations.
 
 ![Export Dataset](docs/screenshots/export.png)
 
-![Quality Report JSON](docs/screenshots/export-report.png)
+![Quality Report JSON](docs/screenshots/exportreport.png)
 
 Example quality report structure:
 
