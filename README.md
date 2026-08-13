@@ -1,9 +1,5 @@
 # Data Quality Intelligence Platform
 
-A full-stack data quality platform for uploading, profiling, validating, cleaning, and exporting structured CSV datasets.
-
-The platform turns raw datasets into actionable quality reports by measuring **completeness, uniqueness, validity, consistency, and overall quality**, then providing configurable cleaning operations and exportable results.
-
 ## Overview
 
 Data preparation is often one of the most time-consuming parts of a data workflow. Before analysis or machine learning, datasets commonly contain:
@@ -44,447 +40,202 @@ Export Dataset + Reports
 
 ## Key Features
 
-### 1. Authentication
+### Authentication
 
-Users can create an account and sign in before accessing the platform.
+The application uses JWT-based authentication. Users register, log in, receive an access token, and use authenticated API requests for dataset operations.
 
-- User registration
-- Login
-- JWT-based authentication
-- Authenticated API requests
-- User-specific dataset access
+### Dataset Upload & Analytics
 
-![Login](docs/screenshots/login.png)
+Users upload CSV datasets through the React interface. The backend stores the file, reads it with Pandas, records metadata, and generates an initial quality report.
 
-![Register](docs/screenshots/register.png)
-
----
-
-### 2. CSV Dataset Upload
-
-Datasets can be uploaded through a dedicated drag-and-drop interface.
-
-The platform then stores the dataset and prepares it for profiling and quality analysis.
-
-![Upload Dataset](docs/screenshots/upload.png)
-
----
-
-### 3. Dataset Dashboard
-
-The dashboard provides a high-level view of the user's datasets.
-
-It displays:
+The dashboard surfaces:
 
 - Total datasets
-- Cleaned datasets
-- Validated datasets
+- Cleaned and validated datasets
 - Average quality score
-- Recent datasets
 - Dataset status distribution
+- Recent datasets
 
-![Dashboard](docs/screenshots/dashboard.png)
+### Data Profiling
 
----
+Profiling provides dataset-level and column-level information, including:
 
-### 4. Dataset Analytics
-
-The analytics page provides an aggregate view of dataset health across the platform.
-
-It includes:
-
-- Total dataset count
-- Average quality score
-- Total rows
-- Total storage
-- Quality distribution
-- Dataset quality radar
-- Datasets requiring cleaning
-- Latest quality alerts
-
-![Dataset Analytics](docs/screenshots/datasets1.png)
-
-![Cleaning Required and Alerts](docs/screenshots/datasets2.png)
-
----
-
-## Data Quality Assessment
-
-Each dataset is evaluated across multiple quality dimensions.
-
-### Completeness
-
-Measures the proportion of expected values that are present.
-
-A dataset with many missing cells receives a lower completeness score.
-
-### Uniqueness
-
-Measures duplicate-record quality.
-
-Duplicate rows reduce the uniqueness score and are surfaced as a data quality issue.
-
-### Validity
-
-Checks whether values satisfy supported validity rules, including malformed email detection.
-
-### Consistency
-
-Evaluates consistency-related dataset characteristics.
-
-### Overall Quality
-
-The platform combines the quality dimensions into an overall dataset quality score.
-
-A dataset's quality is therefore represented as:
-
-```text
-Completeness
-Uniqueness
-Validity
-Consistency
-       ↓
-Overall Quality Score
-```
-
----
-
-## Dataset Overview
-
-The Overview page summarizes the health of an individual dataset.
-
-It displays:
-
-- Number of rows
-- Number of columns
-- File size
-- Dataset status
-- Completeness score
-- Uniqueness score
-- Validity score
-- Consistency score
-- Overall score
-- Issue summary
-- Cleaning recommendations
-
-![Dataset Overview](docs/screenshots/overview.png)
-
-For example, a dataset can surface issues such as:
-
-```text
-Dataset contains 11927 missing values.
-Dataset contains 100 duplicate rows.
-Dataset contains 473 invalid email values.
-```
-
-The platform also generates recommendations based on the detected issues.
-
----
-
-## Dataset Profiling
-
-The profiling view provides column-level statistics before cleaning.
-
-For each column, the platform can display information such as:
-
-- Column name
-- Data type
+- Row and column counts
+- Data types
 - Missing values
 - Unique values
-- Mean
-- Median
-- Minimum
-- Maximum
-- Top values
+- Numeric statistics
+- Dataset preview
 
-A preview of the first five rows is also provided.
+### Quality Assessment
 
-![Dataset Profiling](docs/screenshots/profile1.png)
+Each dataset receives four component scores:
 
-![Dataset Profiling and Preview](docs/screenshots/profile2.png)
-
-This makes it possible to understand the structure and quality of a dataset before modifying it.
-
----
-
-## Cleaning Operations
-
-The Cleaning page provides a centralized interface for transforming datasets.
-
-Available operations include:
-
-| Operation | Description |
+| Metric | Meaning |
 |---|---|
-| Remove Duplicates | Removes duplicate records |
-| Fill Missing Values | Handles missing values using configurable strategies |
-| Normalize Text | Standardizes values in text columns |
-| Detect Outliers | Finds statistical outliers using IQR |
-| Remove Columns | Removes selected columns |
-| Undo Last Action | Reverts the most recent cleaning operation |
-| Restore Original | Restores the originally uploaded dataset |
+| Completeness | Measures missing values |
+| Uniqueness | Measures duplicate rows |
+| Validity | Checks supported validity rules such as email format |
+| Consistency | Represents consistency checks |
 
-![Cleaning Actions](docs/screenshots/cleaningactions.png)
+The overall score is a weighted combination of these dimensions.
 
----
-
-### Remove Duplicates
-
-Duplicate records can be removed while preserving unique rows.
-
-The operation is implemented using Pandas duplicate detection and returns the cleaned dataset.
-
-Conceptually:
-
-```python
-df.drop_duplicates()
+```text
+Overall =
+    0.30 × Completeness
+  + 0.25 × Uniqueness
+  + 0.25 × Validity
+  + 0.20 × Consistency
 ```
 
----
+The report also contains detected issues and actionable recommendations.
 
-### Fill Missing Values
+### Data Cleaning
 
-Missing values can be handled on a column-by-column basis.
+The platform provides configurable cleaning operations.
 
-Supported strategies include:
+**Remove Duplicates**
+
+Uses Pandas duplicate detection and removes repeated records while preserving unique rows.
+
+**Fill Missing Values**
+
+Supports:
 
 - Mean
 - Median
 - Mode
-- Custom value
-- Drop row
+- Custom values
+- Drop rows for selected columns
 
-The interface also distinguishes between numeric and text columns.
+**Normalize Text**
 
-![Fill Missing Values](docs/screenshots/fillmissing.png)
-
-For example:
-
-```text
-Age       → Median
-Salary    → Mean
-Department → Mode
-Name      → Custom Value
-Email     → Drop Row
-```
-
-This allows the user to choose a strategy based on the semantics of each column instead of applying a single rule to the entire dataset.
-
----
-
-### Text Normalization
-
-Text columns can be standardized using:
+Supports:
 
 - Trim whitespace
 - Lowercase
 - Uppercase
 - Title Case
 
-Users can select the columns to modify and choose the required transformation.
+**Outlier Detection**
 
-![Text Normalization](docs/screenshots/text.png)
-
-For example:
-
-```text
-"  john smith  "
-        ↓
-"John Smith"
-```
-
-The cleaning service preserves missing values while applying transformations only to string values.
-
----
-
-### Outlier Detection
-
-The platform uses the **Interquartile Range (IQR)** method to identify statistical outliers.
-
-For each selected numeric column:
+Uses the IQR method:
 
 ```text
 IQR = Q3 - Q1
-
-Lower Bound = Q1 - 1.5 × IQR
-Upper Bound = Q3 + 1.5 × IQR
+Lower = Q1 - 1.5 × IQR
+Upper = Q3 + 1.5 × IQR
 ```
 
-Values outside these bounds are identified as outliers.
+**Remove Columns**
 
-The interface shows:
+Users select unnecessary columns and remove them from the working dataset.
 
-- Column
-- Number of detected outliers
-- IQR range
-- Data range
-- Selected columns
+After a cleaning operation, the dataset is saved, metadata is updated, and the quality report is recalculated.
 
-Users can review the results before removing the selected outliers.
+### Undo & Restore
+
+The platform maintains two backup states:
+
+- **Undo Last Action** — restores the dataset state immediately before the latest cleaning operation.
+- **Restore Original** — restores the dataset exactly as it was when first uploaded.
+
+### Export
+
+Users can export:
+
+- The processed CSV
+- Profile information as JSON
+- The quality report as JSON
+
+## Screenshots
+
+The screenshots below demonstrate the main end-to-end workflow of the platform.
+
+### Authentication
+
+#### Login
+
+![Login](docs/screenshots/login.png)
+
+#### Registration
+
+![Registration](docs/screenshots/register.png)
+
+### Dashboard
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Dataset Upload
+
+![Dataset Upload](docs/screenshots/upload.png)
+
+### Dataset Analytics
+
+![Dataset Analytics](docs/screenshots/datasets1.png)
+
+![Cleaning Required and Alerts](docs/screenshots/datasets2.png)
+
+### Dataset Overview
+
+![Dataset Overview](docs/screenshots/overview.png)
+
+### Dataset Profiling
+
+![Dataset Profiling](docs/screenshots/profile1.png)
+
+![Dataset Profiling and Preview](docs/screenshots/profile2.png)
+
+### Cleaning Actions
+
+![Cleaning Actions](docs/screenshots/cleaningactions.png)
+
+### Fill Missing Values
+
+![Fill Missing Values](docs/screenshots/fillmissing.png)
+
+### Text Normalization
+
+![Text Normalization](docs/screenshots/text.png)
+
+### Outlier Detection
 
 ![Outlier Detection](docs/screenshots/outliers.png)
 
----
-
 ### Remove Columns
-
-Users can inspect dataset columns and permanently remove selected columns.
-
-The interface shows:
-
-- Column name
-- Data type
-- Missing-value count
-- Selected columns
-- Number of selected columns
 
 ![Remove Columns](docs/screenshots/columndrop.png)
 
-This is particularly useful for removing columns that are:
+### Cleaning Results
 
-- Mostly empty
-- Irrelevant to analysis
-- Redundant
-- Constant or low-value features
+![Cleaning Results](docs/screenshots/updates.png)
 
----
-
-## Before-and-After Cleaning
-
-Cleaning operations update the dataset and its quality metrics.
-
-For example, a missing-value cleaning operation can produce a result such as:
-
-```text
-Missing Values: 11927 → 3868
-Overall Score: 81.38% → 82.86%
-```
-
-This gives the user immediate feedback on whether the cleaning operation improved the dataset.
-
-![Cleaning Result](docs/screenshots/updates.png)
-
-The platform also supports reviewing the updated dataset quality after cleaning.
-
----
-
-## Undo and Restore
-
-Cleaning operations are designed to be reversible.
-
-### Undo Last Action
-
-The platform maintains a one-level backup of the dataset before a cleaning operation.
-
-Selecting **Undo Last Action** restores the previous dataset state.
-
-### Restore Original
-
-The originally uploaded dataset is stored separately as an original backup.
-
-Selecting **Restore Original** discards subsequent cleaning changes and restores the dataset to its original uploaded state.
-
-This provides two levels of protection:
-
-```text
-Original Dataset
-      │
-      ├── Cleaning Action 1
-      │       ↓
-      │   Current Dataset
-      │
-      └── Undo → Previous State
-```
-
----
-
-## Export
-
-The Export page provides three downloadable outputs.
-
-### CSV
-
-Downloads the latest version of the dataset.
-
-### Profile JSON
-
-Exports profiling information, including metadata and dataset preview/profile information.
-
-### Quality Report JSON
-
-Exports the calculated quality scores, detected issues, and recommendations.
+### Export
 
 ![Export Dataset](docs/screenshots/export.png)
 
 ![Quality Report JSON](docs/screenshots/exportreport.png)
 
-Example quality report structure:
-
-```json
-{
-  "completeness_score": 41.24,
-  "uniqueness_score": 100,
-  "validity_score": 5.83,
-  "consistency_score": 100,
-  "overall_score": 58.83,
-  "total_missing": 133526,
-  "duplicate_count": 0,
-  "invalid_email_count": 5350,
-  "invalid_type_count": 0,
-  "issue_summary": [],
-  "recommendations": []
-}
-```
-
-The exported report makes the quality assessment available outside the application for further analysis or record keeping.
-
----
 
 # Technical Architecture
 
-The project follows a frontend-backend architecture.
-
 ```text
-                    ┌──────────────────────────┐
-                    │        React Frontend    │
-                    │                          │
-                    │ Dashboard                │
-                    │ Upload                   │
-                    │ Profiling                │
-                    │ Cleaning                 │
-                    │ Export                   │
-                    └────────────┬─────────────┘
-                                 │
-                          REST API / JWT
-                                 │
-                    ┌────────────▼─────────────┐
-                    │      Django Backend      │
-                    │                          │
-                    │ REST API                 │
-                    │ Authentication           │
-                    │ Dataset Operations       │
-                    │ Cleaning Services        │
-                    │ Quality Reports          │
-                    └────────────┬─────────────┘
-                                 │
-                    ┌────────────▼─────────────┐
-                    │          Pandas          │
-                    │                          │
-                    │ CSV Processing            │
-                    │ Profiling                │
-                    │ Cleaning                 │
-                    │ Statistical Analysis     │
-                    └────────────┬─────────────┘
-                                 │
-                    ┌────────────▼─────────────┐
-                    │        PostgreSQL        │
-                    │                          │
-                    │ Users                    │
-                    │ Dataset Metadata         │
-                    │ Validation Reports       │
-                    └──────────────────────────┘
+React Frontend
+      |
+      | REST / JSON / multipart upload
+      v
+Django REST Framework
+      |
+      +-----------------------------+
+      |             |               |
+ DatasetService  QualityService  CleaningService
+      |             |               |
+      +-------------+---------------+
+                    |
+                  Pandas
+                    |
+                PostgreSQL
 ```
-
----
 
 ## Technology Stack
 
@@ -492,8 +243,10 @@ The project follows a frontend-backend architecture.
 
 - React
 - JavaScript
-- Axios
+- Vite
 - Tailwind CSS
+- Axios
+- React Dropzone
 - Lucide React
 
 ### Backend
@@ -501,14 +254,14 @@ The project follows a frontend-backend architecture.
 - Python
 - Django
 - Django REST Framework
-- Simple JWT
+- SimpleJWT
+- Gunicorn for deployment configuration
 
 ### Data Processing
 
 - Pandas
 - NumPy-compatible Pandas operations
-- Statistical profiling
-- IQR-based outlier detection
+- IQR-based statistical outlier detection
 
 ### Database
 
@@ -516,328 +269,126 @@ The project follows a frontend-backend architecture.
 
 ### API Communication
 
-The frontend communicates with the Django backend through REST APIs.
+Axios centralizes API requests and automatically attaches the JWT access token to authenticated requests.
 
-Example API operations include:
-
-```text
-GET    /api/datasets/
-GET    /api/datasets/<id>/
-POST   /api/datasets/upload/
-GET    /api/profile/<id>/
-POST   /api/clean/<id>/
-GET    /api/datasets/<id>/report/
-GET    /api/datasets/<id>/outliers/
-POST   /api/datasets/<id>/undo/
-POST   /api/datasets/<id>/restore/
-GET    /api/datasets/<id>/export/
-DELETE /api/datasets/<id>/delete/
-PATCH  /api/datasets/<id>/rename/
-```
-
-Authentication uses JWT access tokens, which are attached to API requests from the frontend.
-
----
+The backend exposes endpoints for authentication, dashboards, datasets, profiling, reports, cleaning, undo/restore, outliers, renaming, deletion, and export.
 
 # Backend Design
 
-The backend separates API handling from dataset-processing logic.
-
-A simplified structure is:
-
-```text
-Backend
-├── API / Views
-│   ├── Dataset endpoints
-│   ├── Authentication
-│   ├── Profiling
-│   ├── Cleaning
-│   └── Export
-│
-├── Services
-│   ├── DatasetService
-│   └── CleaningService
-│
-├── Models
-│   ├── Dataset
-│   └── ValidationReport
-│
-└── Data Processing
-    └── Pandas DataFrames
-```
+The backend follows a service-oriented structure so API views do not contain all of the CSV-processing logic.
 
 ### DatasetService
 
-The dataset service is responsible for file-related operations such as:
+Responsible for:
 
-- Loading CSV files
-- Saving modified datasets
-- Creating original backups
-- Creating undo backups
-- Restoring previous states
-- Restoring the original dataset
-- Updating dataset metadata
-- Deleting dataset and backup files
+- Loading CSV files into Pandas DataFrames
+- Saving cleaned DataFrames
+- Updating row, column, and file-size metadata
+- Creating the permanent original backup
+- Creating the one-level undo backup
+- Restoring previous/original states
+- Deleting dataset files and backups
 
-This keeps direct file operations out of the API views.
+### QualityService
+
+Responsible for:
+
+- Missing-value analysis
+- Duplicate detection
+- Email validity checks
+- Quality-score calculation
+- Issue summaries
+- Cleaning recommendations
 
 ### CleaningService
 
-The cleaning service contains the actual DataFrame transformations.
-
-Implemented operations include:
-
-```text
-remove_duplicates()
-fill_missing()
-normalize_text()
-remove_columns()
-remove_outliers()
-detect_outliers()
-```
-
-This separation makes the cleaning logic reusable and keeps the API layer focused on request/response handling.
-
----
+Contains reusable DataFrame transformations for duplicates, missing values, text normalization, column removal, outlier detection, and outlier removal.
 
 # Data Model
 
-The main dataset entities are:
-
 ### Dataset
 
-Stores dataset ownership and metadata including:
+Stores:
 
-- User
+- User ownership
 - Dataset name
-- File
+- Uploaded file
 - Upload timestamp
 - File size
-- Row count
-- Column count
-- Status
+- Row and column counts
+- Processing status
 - Initial quality metrics
 
 ### ValidationReport
 
-Stores the quality assessment associated with a dataset.
-
-It contains:
+Stores:
 
 - Completeness score
 - Uniqueness score
 - Validity score
 - Consistency score
 - Overall score
-- Total missing values
+- Missing-value count
 - Duplicate count
-- Invalid email count
-- Invalid type count
+- Invalid-email count
 - Issue summary
 - Recommendations
 
-The relationship between a dataset and its validation report is one-to-one.
-
----
-
-# Dataset Lifecycle
-
-A dataset moves through the platform as follows:
-
-```text
-Uploaded
-   ↓
-Profiled
-   ↓
-Validated
-   ↓
-Cleaned
-```
-
-The platform keeps dataset metadata synchronized with file modifications, including row count, column count, file size, and status.
-
----
-
-# Example Use Case
-
-Consider a customer or employee dataset containing:
-
-```text
-1900 rows
-17 columns
-11927 missing values
-100 duplicate rows
-473 invalid email values
-```
-
-The platform first profiles the dataset and reports its quality:
-
-```text
-Completeness   63.07%
-Uniqueness     94.74%
-Validity       75.11%
-Consistency    100%
-Overall        81.38%
-```
-
-The user can then:
-
-1. Inspect the profiling results.
-2. Fill missing values using column-specific strategies.
-3. Remove duplicate records.
-4. Normalize inconsistent text.
-5. Detect and remove selected outliers.
-6. Remove unnecessary columns.
-7. Review the updated quality metrics.
-8. Undo the latest operation if necessary.
-9. Restore the original dataset if required.
-10. Export the cleaned CSV and quality reports.
-
-This makes the platform useful as a preprocessing layer before downstream analytics or machine-learning workflows.
-
----
+Each `Dataset` has one associated `ValidationReport`.
 
 # Project Highlights
 
-The project focuses on more than simply modifying CSV files.
-
 ### Quality-first workflow
 
-The platform identifies quality problems before cleaning and reports the effect of cleaning operations afterward.
+The project treats data quality as a measurable workflow rather than only a cleaning tool.
 
 ### Configurable cleaning
 
-Cleaning is not limited to a single hard-coded strategy. Users can choose column-specific approaches for missing values and text transformations.
+Users choose what to change instead of applying one fixed cleaning pipeline.
 
 ### Reversible transformations
 
-Original and undo backups provide protection against accidental or unwanted changes.
+Original and undo backups reduce the risk of destructive cleaning.
 
 ### Explainable quality reports
 
-Instead of presenting only one score, the platform exposes the individual quality dimensions and the underlying issue summary.
+Scores are accompanied by issue summaries and recommendations.
 
 ### Exportable results
 
-The cleaned dataset and quality metadata can be taken outside the application through CSV and JSON exports.
-
----
-
-# Screenshots
-
-The main screenshots are included throughout this README to demonstrate the end-to-end workflow.
-
-For a clean repository structure, store them under:
-
-```text
-docs/
-└── screenshots/
-    ├── login.png
-    ├── register.png
-    ├── dashboard.png
-    ├── upload.png
-    ├── datasets-1.png
-    ├── datasets-2.png
-    ├── overview.png
-    ├── profile-1.png
-    ├── profile-2.png
-    ├── cleaning-actions.png
-    ├── fill-missing.png
-    ├── text.png
-    ├── outliers.png
-    ├── column-drop.png
-    ├── updates.png
-    ├── export.png
-    └── export-report.png
-```
-
-The README references these paths directly, so keep the filenames unchanged after renaming them as above.
-
----
+The processed dataset and quality information can be consumed outside the application.
 
 # Suggested Repository Structure
 
 ```text
-data-quality-intelligence-platform/
-│
+Data-Quality-Intelligence-Platform-V2/
 ├── frontend/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── ...
-│
+│   └── src/
 ├── backend/
-│   ├── manage.py
+│   ├── api/
 │   ├── datasets/
-│   ├── ...
-│   └── requirements.txt
-│
+│   └── data_quality_platform/
 ├── docs/
 │   └── screenshots/
-│       ├── login.png
-│       ├── register.png
-│       ├── dashboard.png
-│       ├── upload.png
-│       ├── datasets-1.png
-│       ├── datasets-2.png
-│       ├── overview.png
-│       ├── profile-1.png
-│       ├── profile-2.png
-│       ├── cleaning-actions.png
-│       ├── fill-missing.png
-│       ├── text.png
-│       ├── outliers.png
-│       ├── column-drop.png
-│       ├── updates.png
-│       ├── export.png
-│       └── export-report.png
-│
 └── README.md
 ```
 
----
+The screenshots used in this README are stored in `docs/screenshots/`.
 
 # Running the Project
 
 ## Backend
 
-Create and activate a Python virtual environment, install the backend dependencies, configure the database, and start the Django development server.
-
-```bash
+```powershell
+cd backend
 python -m venv venv
-```
-
-Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-Linux/macOS:
-
-```bash
-source venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
+venv\Scriptsctivate
 pip install -r requirements.txt
-```
-
-Apply migrations:
-
-```bash
 python manage.py migrate
-```
-
-Start the backend:
-
-```bash
 python manage.py runserver
 ```
 
-The API runs at:
+Backend:
 
 ```text
 http://127.0.0.1:8000/
@@ -845,138 +396,110 @@ http://127.0.0.1:8000/
 
 ## Frontend
 
-Install the frontend dependencies:
-
-```bash
+```powershell
+cd frontend
 npm install
-```
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-The frontend runs at the Vite development URL shown in the terminal, typically:
+The Vite development server will display the frontend URL, typically:
 
 ```text
 http://localhost:5173/
 ```
 
----
+The frontend API client is configured to communicate with the local Django API.
 
 # Environment Configuration
 
-Configure the project-specific environment variables for the backend and frontend as required by the local setup.
+For local development, configure the Django settings for the local database and development environment.
 
-Typical configuration areas include:
+Typical local configuration includes:
 
 ```text
-Database connection
-Django secret key
-Allowed hosts / CORS
-Frontend API base URL
-JWT configuration
-Media file storage
+DEBUG=True
+DATABASE=PostgreSQL
+BACKEND=http://127.0.0.1:8000
+FRONTEND=http://localhost:5173
 ```
 
-Do not commit passwords, secret keys, JWT secrets, database credentials, or other sensitive configuration to the repository.
-
----
+Do not commit real credentials or secret keys to the repository.
 
 # API Flow
 
-A typical dataset workflow is represented by the following API sequence:
+The main API flow is:
 
 ```text
-POST /datasets/upload/
-        ↓
-GET /datasets/<id>/
-        ↓
-GET /profile/<id>/
-        ↓
-GET /datasets/<id>/report/
-        ↓
-POST /clean/<id>/
-        ↓
-GET /datasets/<id>/report/
-        ↓
-GET /datasets/<id>/export/
+Register
+   ↓
+Login → JWT access token
+   ↓
+Upload CSV
+   ↓
+Profile + quality report
+   ↓
+Clean / undo / restore
+   ↓
+Recalculate quality metrics
+   ↓
+Export
 ```
 
-Cleaning-specific operations use the same cleaning endpoint with an action and optional configuration.
+Important endpoints include:
 
-For example:
+```text
+POST   /api/auth/register/
+POST   /api/auth/login/
 
-```json
-{
-  "action": "duplicates"
-}
+GET    /api/dashboard/
+GET    /api/datasets/
+POST   /api/datasets/upload/
+GET    /api/profile/<id>/
+GET    /api/datasets/<id>/report/
+
+POST   /api/clean/<id>/
+GET    /api/datasets/<id>/outliers/
+POST   /api/datasets/<id>/undo/
+POST   /api/datasets/<id>/restore/
+
+PATCH  /api/datasets/<id>/rename/
+DELETE /api/datasets/<id>/delete/
+GET    /api/datasets/<id>/export/
 ```
-
-Configurable operations can additionally provide options such as selected columns, strategies, or custom values.
-
----
 
 # What I Learned
 
-This project provided practical experience with:
+This project gave me practical experience with:
 
-- Designing a full-stack application
-- Building REST APIs with Django REST Framework
-- Connecting a React frontend to backend APIs
+- Full-stack application architecture
+- React and REST API integration
+- Django REST Framework
 - JWT authentication
-- File upload and storage
-- CSV processing with Pandas
-- Data profiling
-- Data quality metrics
+- Pandas-based CSV processing
+- Data profiling and quality metrics
 - Statistical outlier detection
-- Configurable data cleaning
+- Configurable data-cleaning workflows
+- PostgreSQL data modelling
 - Backup and restore workflows
-- Database modelling
-- Frontend state management
-- API error handling
-- Exporting structured data and reports
-
----
+- API-based export and error handling
 
 # Future Improvements
 
-Potential extensions include:
-
-- Support for Excel and additional structured formats
-- More comprehensive validation rules
-- Configurable quality-score weighting
-- Batch cleaning pipelines
-- Cleaning history with multiple undo levels
-- Automated data-quality scheduling
-- Data-quality trend tracking
+- Excel and additional structured-data support
+- More configurable validation rules
+- Configurable quality-score weights
+- Multi-level cleaning history
+- Background processing for very large datasets
+- Scheduled quality checks and quality trends
 - Role-based access control
 - Cloud object storage
-- Background processing for very large datasets
 - Advanced anomaly detection
-- More extensive data-quality rules and custom validators
-
----
+- Custom data-quality rules
 
 # Conclusion
 
-The **Data Quality Intelligence Platform** provides an end-to-end workflow for understanding and improving structured dataset quality.
+The Data Quality Intelligence Platform combines data ingestion, profiling, quality assessment, cleaning, reversibility, and export into one workflow.
 
-Instead of treating data cleaning as a collection of isolated operations, the platform connects:
+The main engineering focus was keeping the system modular: React handles the user experience, Django REST Framework exposes the API, service classes handle dataset operations and quality logic, Pandas performs the data transformations, and PostgreSQL stores application metadata and reports.
 
-```text
-Profiling
-   +
-Quality Assessment
-   +
-Issue Detection
-   +
-Configurable Cleaning
-   +
-Reversible Changes
-   +
-Exportable Results
-```
-
-This creates a practical preprocessing layer that can be used before analytics, reporting, or machine-learning workflows.
+This makes the project suitable as a practical demonstration of full-stack development combined with data engineering and data-quality concepts.
