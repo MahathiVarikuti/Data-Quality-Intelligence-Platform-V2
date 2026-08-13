@@ -174,7 +174,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
-    "https://dqi-platform.vercel.app",
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers)
@@ -188,6 +187,9 @@ REST_FRAMEWORK = {
 
 
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
