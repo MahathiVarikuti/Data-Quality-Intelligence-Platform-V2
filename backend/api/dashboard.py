@@ -81,10 +81,6 @@ def dashboard_summary(request):
             2,
         ) if reports else 0,
 
-        "consistency": round(
-            sum(r.consistency_score for r in reports) / len(reports),
-            2,
-        ) if reports else 0,
     }
 
     cleaning_required = []

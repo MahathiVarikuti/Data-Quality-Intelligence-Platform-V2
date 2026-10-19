@@ -9,10 +9,9 @@ class QualityService:
     EMAIL_PATTERN = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
 
     QUALITY_WEIGHTS = {
-        "completeness": 0.30,
-        "uniqueness": 0.25,
-        "validity": 0.25,
-        "consistency": 0.20,
+        "completeness": 0.375,
+        "uniqueness": 0.3125,
+        "validity": 0.3125,
     }
 
     @staticmethod
@@ -34,12 +33,10 @@ class QualityService:
         completeness_score = max(0, round(100 - missing_pct, 2))
         uniqueness_score = max(0, round(100 - dup_pct, 2))
         validity_score = max(0, round(100 - email_pct, 2))
-        consistency_score = 100.0
         overall_score = round(
             (completeness_score * QualityService.QUALITY_WEIGHTS["completeness"])
             + (uniqueness_score * QualityService.QUALITY_WEIGHTS["uniqueness"])
-            + (validity_score * QualityService.QUALITY_WEIGHTS["validity"])
-            + (consistency_score * QualityService.QUALITY_WEIGHTS["consistency"]),
+            + (validity_score * QualityService.QUALITY_WEIGHTS["validity"]),
             2,
         )
         issue_summary, recommendations = [], []
@@ -57,7 +54,7 @@ class QualityService:
             recommendations.append("Dataset quality looks good. You can export the cleaned version.")
         return {
             'completeness_score': completeness_score, 'uniqueness_score': uniqueness_score,
-            'validity_score': validity_score, 'consistency_score': consistency_score,
+            'validity_score': validity_score,
             'overall_score': overall_score, 'total_missing': total_missing,
             'duplicate_count': duplicate_count, 'invalid_email_count': invalid_email_count,
             'invalid_type_count': 0,'invalid_email_samples': invalid_email_samples,

@@ -95,10 +95,9 @@ def _compute_report(df):
     completeness_score = max(0, round(100 - missing_pct, 2))
     uniqueness_score = max(0, round(100 - dup_pct, 2))
     validity_score = max(0, round(100 - email_pct, 2))
-    consistency_score = 100.0
     overall_score = round(
-        (completeness_score * 0.30) + (uniqueness_score * 0.25) +
-        (validity_score * 0.25) + (consistency_score * 0.20), 2
+        (completeness_score * 0.375) + (uniqueness_score * 0.3125) +
+        (validity_score * 0.3125), 2
     )
     issue_summary, recommendations = [], []
     if total_missing > 0:
@@ -115,7 +114,7 @@ def _compute_report(df):
         recommendations.append("Dataset quality looks good. You can export the cleaned version.")
     return {
         'completeness_score': completeness_score, 'uniqueness_score': uniqueness_score,
-        'validity_score': validity_score, 'consistency_score': consistency_score,
+        'validity_score': validity_score,
         'overall_score': overall_score, 'total_missing': total_missing,
         'duplicate_count': duplicate_count, 'invalid_email_count': invalid_email_count,
         'invalid_email_samples': invalid_email_samples,
@@ -224,7 +223,6 @@ def dataset_detail(request, dataset_id):
             'completeness_score': metrics['completeness_score'],
             'uniqueness_score': metrics['uniqueness_score'],
             'validity_score': metrics['validity_score'],
-            'consistency_score': metrics['consistency_score'],
             'overall_score': metrics['overall_score'],
             'total_missing': metrics['total_missing'],
             'duplicate_count': metrics['duplicate_count'],

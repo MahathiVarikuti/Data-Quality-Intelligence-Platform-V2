@@ -9,7 +9,6 @@ class ValidationReportSerializer(serializers.ModelSerializer):
             "completeness_score",
             "uniqueness_score",
             "validity_score",
-            "consistency_score",
             "overall_score",
             "total_missing",
             "duplicate_count",

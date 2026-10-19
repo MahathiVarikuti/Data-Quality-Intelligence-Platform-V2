@@ -69,23 +69,21 @@ Profiling provides dataset-level and column-level information, including:
 
 ### Quality Assessment
 
-Each dataset receives four component scores:
+Each dataset receives three component scores:
 
 | Metric | Meaning |
 |---|---|
 | Completeness | Measures missing values |
 | Uniqueness | Measures duplicate rows |
 | Validity | Checks supported validity rules such as email format |
-| Consistency | Represents consistency checks |
 
 The overall score is a weighted combination of these dimensions.
 
 ```text
 Overall =
-    0.30 × Completeness
-  + 0.25 × Uniqueness
-  + 0.25 × Validity
-  + 0.20 × Consistency
+    0.375 × Completeness
+  + 0.3125 × Uniqueness
+  + 0.3125 × Validity
 ```
 
 The report also contains detected issues and actionable recommendations.
@@ -326,7 +324,6 @@ Stores:
 - Completeness score
 - Uniqueness score
 - Validity score
-- Consistency score
 - Overall score
 - Missing-value count
 - Duplicate count

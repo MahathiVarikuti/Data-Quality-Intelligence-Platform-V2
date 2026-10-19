@@ -121,7 +121,7 @@ export default function DatasetDetails() {
         Quality Scores
       </h2>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <QualityScoreCard
           title="Completeness"
           score={dataset.report?.completeness_score ?? 0}
@@ -135,11 +135,6 @@ export default function DatasetDetails() {
         <QualityScoreCard
           title="Validity"
           score={dataset.report?.validity_score ?? 0}
-        />
-
-        <QualityScoreCard
-          title="Consistency"
-          score={dataset.report?.consistency_score ?? 0}
         />
 
         <QualityScoreCard

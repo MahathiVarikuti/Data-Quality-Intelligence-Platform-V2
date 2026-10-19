@@ -390,10 +390,10 @@ const radarCtx = document.getElementById('radarChart').getContext('2d');
 new Chart(radarCtx, {
     type: 'radar',
     data: {
-        labels: ['Completeness', 'Uniqueness', 'Validity', 'Consistency'],
+        labels: ['Completeness', 'Uniqueness', 'Validity'],
         datasets: [{
             label: 'Quality Score',
-            data: [{{ completeness_score }}, {{ uniqueness_score }}, {{ validity_score }}, {{ consistency_score }}],
+            data: [{{ completeness_score }}, {{ uniqueness_score }}, {{ validity_score }}],
             backgroundColor: 'rgba(47,109,225,0.12)',
             borderColor: '#2f6de1',
             pointBackgroundColor: '#2f6de1',

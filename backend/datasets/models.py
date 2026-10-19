@@ -37,7 +37,6 @@ class ValidationReport(models.Model):
     completeness_score = models.FloatField(default=0)
     uniqueness_score = models.FloatField(default=0)
     validity_score = models.FloatField(default=0)
-    consistency_score = models.FloatField(default=0)
     overall_score = models.FloatField(default=0)
 
     total_missing = models.IntegerField(default=0)

@@ -22,10 +22,6 @@ export default function QualityRadarChart({ data }) {
       metric: "Validity",
       value: data.validity,
     },
-    {
-      metric: "Consistency",
-      value: data.consistency,
-    },
   ];
 
   return (
